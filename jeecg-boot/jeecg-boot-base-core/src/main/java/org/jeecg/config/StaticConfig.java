@@ -12,6 +12,10 @@ import org.springframework.stereotype.Component;
 @Data
 public class StaticConfig {
 
+
+    @Value("${jeecg.sms.enable:false}")
+    private Boolean smsEnable;
+
     @Value("${jeecg.oss.accessKey:}")
     private String accessKeyId;
 

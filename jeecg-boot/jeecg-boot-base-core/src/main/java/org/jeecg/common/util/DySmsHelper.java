@@ -37,6 +37,7 @@ public class DySmsHelper {
     /**TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)*/
     static  String accessKeyId;
     static  String accessKeySecret;
+    static  Boolean smsEnable;
 
     public static void setAccessKeyId(String accessKeyId) {
         DySmsHelper.accessKeyId = accessKeyId;
@@ -46,6 +47,10 @@ public class DySmsHelper {
         DySmsHelper.accessKeySecret = accessKeySecret;
     }
 
+    public static void setSmsEnable(Boolean smsEnable) {
+        DySmsHelper.smsEnable = smsEnable;
+    }
+
     public static String getAccessKeyId() {
         return accessKeyId;
     }
@@ -53,9 +58,13 @@ public class DySmsHelper {
     public static String getAccessKeySecret() {
         return accessKeySecret;
     }
-    
-    
+
+
     public static boolean sendSms(String phone, JSONObject templateParamJson, DySmsEnum dySmsEnum) throws ClientException {
+        if (smsEnable) {
+            logger.info("sendSms开关关闭不发送短信,phone:{},templateParamJson:{},dySmsEnum:{}", phone, JSONObject.toJSONString(templateParamJson), dySmsEnum);
+            return true;
+        }
     	//可自助调整超时时间
         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
@@ -66,8 +75,9 @@ public class DySmsHelper {
         //logger.info("阿里大鱼短信秘钥 accessKeySecret："+ staticConfig.getAccessKeySecret());
         setAccessKeyId(staticConfig.getAccessKeyId());
         setAccessKeySecret(staticConfig.getAccessKeySecret());
+        setSmsEnable(staticConfig.getSmsEnable());
         //update-end-author：taoyan date:20200811 for:配置类数据获取
-        
+
         //初始化acsClient,暂不支持region化
         IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);
         DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", PRODUCT, DOMAIN);
