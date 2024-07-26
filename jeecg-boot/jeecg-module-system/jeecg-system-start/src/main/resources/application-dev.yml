@@ -161,9 +161,9 @@ spring:
           slow-sql-millis: 5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://120.77.243.135:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
-          password: root
+          password: Hg123456
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -174,9 +174,9 @@ spring:
   #redis 配置
   redis:
     database: 0
-    host: 127.0.0.1
+    host: 120.77.243.135
     port: 6379
-    password: ''
+    password: 'Hg123456'
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/**/xml/*Mapper.xml
@@ -226,6 +226,8 @@ jeecg:
     secretKey: ??
     endpoint: oss-cn-beijing.aliyuncs.com
     bucketName: jeecgdev
+  sms:
+    enable: false
   # ElasticSearch 6设置
   elasticsearch:
     cluster-name: jeecg-ES
@@ -242,7 +244,7 @@ jeecg:
   #大屏报表参数设置
   jmreport:
     #多租户模式，默认值为空(created:按照创建人隔离、tenant:按照租户隔离) (v1.6.2+ 新增)
-    saasMode: 
+    saasMode:
     # 平台上线安全配置(v1.6.2+ 新增)
     firewall:
       # 数据源安全 (开启后，不允许使用平台数据源、SQL解析加签并且不允许查询数据库)
@@ -262,8 +264,8 @@ jeecg:
     logRetentionDays: 30
   #分布式锁配置
   redisson:
-    address: 127.0.0.1:6379
-    password:
+    address: 120.77.243.135:6379
+    password: Hg123456
     type: STANDALONE
     enabled: true
   # ai-chat
@@ -307,10 +309,10 @@ justauth:
       client-secret: ??
       redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/github/callback
     WECHAT_ENTERPRISE:
-      client-id: ??
-      client-secret: ??
-      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
-      agent-id: ??
+      client-id: ww0e0851d085e4172d
+      client-secret: Tezbs-v0A44SbiCKloBjFkn7XHXrm9_BIP-QvvtAslQ
+      redirect-uri: http://luckygood.fun:8088/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
+      agent-id: 1000002
     DINGTALK:
       client-id: ??
       client-secret: ??
