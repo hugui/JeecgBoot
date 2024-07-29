@@ -311,7 +311,7 @@ justauth:
     WECHAT_ENTERPRISE:
       client-id: ww0e0851d085e4172d
       client-secret: Tezbs-v0A44SbiCKloBjFkn7XHXrm9_BIP-QvvtAslQ
-      redirect-uri: http://luckygood.fun:8088/jeecg-boot/sys/thirdLogin/wechat_enterprise/callback
+      redirect-uri: http://luckygood.fun:8088/jeecgboot/sys/thirdLogin/wechat_enterprise/callback
       agent-id: 1000002
     DINGTALK:
       client-id: ??
@@ -320,11 +320,20 @@ justauth:
     WECHAT_OPEN:
       client-id: ??
       client-secret: ??
-      redirect-uri: http://sso.test.com:8080/jeecg-boot/sys/thirdLogin/wechat_open/callback
+      redirect-uri: http://luckygood.fun:8088/jeecgboot/sys/thirdLogin/wechat_open/callback
   cache:
     type: default
     prefix: 'demo::'
     timeout: 1h
+
+#oauth2
+oauth2:
+  type:
+    WECHAT_ENTERPRISE:
+      redirect-uri: http://luckygood.fun:8088/jeecgboot/sys/thirdLogin/oauth2/wechat_enterprise/callback
+    DINGTALK:
+      redirect-uri: http://luckygood.fun:8088/jeecgboot/sys/thirdLogin/oauth2/dingtalk/callback
+
 
 captcha:
   check: false
