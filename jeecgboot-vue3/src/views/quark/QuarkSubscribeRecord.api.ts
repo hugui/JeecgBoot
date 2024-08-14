@@ -12,6 +12,7 @@ enum Api {
   importExcel = '/quark/quarkSubscribeRecord/importExcel',
   exportXls = '/quark/quarkSubscribeRecord/exportXls',
   sync = '/quark/quarkSubscribeRecord/sync',
+  getFolders = '/quark/folders',
 }
 /**
  * 导出api
@@ -72,3 +73,6 @@ export const syncData = (params, handleSuccess) => {
     handleSuccess();
   });
 }
+
+export const getFolders = (params) =>
+  defHttp.get({url: Api.getFolders + "?pdirFid=" + params});

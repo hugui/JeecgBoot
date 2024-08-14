@@ -50,6 +50,11 @@ export const columns: BasicColumn[] = [
     align:"center",
     dataIndex: 'status'
    },
+  {
+    title: '创建时间',
+    align: 'center',
+    dataIndex: 'createTime'
+  },
 ];
 //查询数据
 export const searchFormSchema: FormSchema[] = [

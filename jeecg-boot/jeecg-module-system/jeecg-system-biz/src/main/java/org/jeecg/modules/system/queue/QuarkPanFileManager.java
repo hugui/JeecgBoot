@@ -67,15 +67,13 @@ public class QuarkPanFileManager {
 
         // 获取响应状态码
         int statusCode = response.getStatus();
-        System.out.println("Status Code: " + statusCode);
 
         // 获取响应内容
         String body = response.body();
-        System.out.println("Body: " + body);
 
         JSONObject jsonObject = JSON.parseObject(body);
 
-        System.out.println(jsonObject);
+        log.info("getStoken:{}", jsonObject.toJSONString());
         if (statusCode == 200) {
             return jsonObject.getJSONObject("data").getString("stoken");
         }
@@ -101,14 +99,14 @@ public class QuarkPanFileManager {
                 .form("_fetch_total", 1)
                 .form("_sort", "file_type:asc,updated_at:desc");
         HttpResponse response = request.execute();
-        System.out.println("response: " + JSON.toJSONString(response));
+//        System.out.println("response: " + JSON.toJSONString(response));
         int statusCode = response.getStatus();
         if (statusCode != 200) {
             log.error("response:{}", JSON.toJSONString(response));
             return null;
         }
         String body = response.body();
-        System.out.println("Body: " + body);
+//        System.out.println("Body: " + body);
 
         QuarkApiResponse<QuarkShareDetailBo> result = JSON.parseObject(body, new TypeReference<QuarkApiResponse<QuarkShareDetailBo>>() {
         });
@@ -125,12 +123,14 @@ public class QuarkPanFileManager {
         List<QuarkShareDetailBo.ListItem> fileItemList = detailBo.getList();
         while (true) {
             List<QuarkShareDetailBo.ListItem> dirList = fileItemList.stream().filter(t -> Boolean.TRUE.equals(t.isDir())).collect(Collectors.toList());
+
+            QuarkShareDetailBo.ListItem listItem = dirList.stream().filter(t -> t.isDir() && t.getFid().equals(sourceDirFid))
+                    .findFirst().orElse(null);
+            if (listItem != null) {
+                return getDetail(stoken, pwdId, sourceDirFid);
+            }
             for (QuarkShareDetailBo.ListItem item : dirList) {
-                if (item.getFid().equals(sourceDirFid)) {
-                    return getDetail(stoken, pwdId, sourceDirFid);
-                } else {
-                    return find(stoken, pwdId, item.getFid(), sourceDirFid);
-                }
+                return find(stoken, pwdId, item.getFid(), sourceDirFid);
             }
         }
     }
@@ -181,6 +181,9 @@ public class QuarkPanFileManager {
     }
 
     public List<QuarkFileListBo.QuarkFileListItemBo> sort(String pdirFid) throws Exception {
+        if (Strings.isNullOrEmpty(pdirFid)) {
+            pdirFid = "0";
+        }
         String api = "https://drive-pc.quark.cn/1/clouddrive/file/sort";
         HttpRequest request = HttpUtil.createGet(api).addHeaders(getHeaders())
                 .form("pr", "ucpro")
@@ -204,6 +207,35 @@ public class QuarkPanFileManager {
         });
 
         return result.getData().getList();
+    }
+
+
+    public QuarkNewFileBo newFile(String pdirFid, String fileName, String dirPath) {
+        if (Strings.isNullOrEmpty(pdirFid)) {
+            pdirFid = "0";
+        }
+        JSONObject params = new JSONObject();
+        params.put("pdir_fid", pdirFid);
+        params.put("file_name", fileName);
+        params.put("dir_path", dirPath);
+        params.put("dir_init_lock", false);
+
+        String api = "https://drive-pc.quark.cn/1/clouddrive/file?pr=ucpro&fr=pc&uc_param_str=";
+        HttpRequest request = HttpUtil.createPost(api)
+                .body(params.toJSONString())
+                .addHeaders(getHeaders());
+        HttpResponse response = request.execute();
+        int statusCode = response.getStatus();
+        if (statusCode != 200) {
+            log.error("response:{}", JSON.toJSONString(response));
+            return null;
+        }
+        String body = response.body();
+        log.info("newFile,body:{}", body);
+        QuarkApiResponse<QuarkNewFileBo> result = JSON.parseObject(body, new TypeReference<QuarkApiResponse<QuarkNewFileBo>>() {
+        });
+
+        return result.getData();
     }
 
     public static String getSeriesOrder(String fileName) {

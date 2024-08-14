@@ -28,8 +28,8 @@ enum Api {
   userQuitAgent = '/sys/user/userQuitAgent',
   getQuitList = '/sys/user/getQuitList',
   putCancelQuit = '/sys/user/putCancelQuit',
-  updateUserTenantStatus='/sys/tenant/updateUserTenantStatus',
-  getUserTenantPageList='/sys/tenant/getUserTenantPageList',
+  updateUserTenantStatus = '/sys/tenant/updateUserTenantStatus',
+  getUserTenantPageList = '/sys/tenant/getUserTenantPageList',
 }
 /**
  * 导出api

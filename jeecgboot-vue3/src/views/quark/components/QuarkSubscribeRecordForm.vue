@@ -14,7 +14,7 @@
     import { propTypes } from '/@/utils/propTypes';
     import {getBpmFormSchema} from '../QuarkSubscribeRecord.data';
     import {saveOrUpdate} from '../QuarkSubscribeRecord.api';
-    
+
     export default defineComponent({
         name: "QuarkSubscribeRecordForm",
         components:{

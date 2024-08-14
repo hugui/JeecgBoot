@@ -8,12 +8,14 @@
     import {ref, computed, unref} from 'vue';
     import {BasicModal, useModalInner} from '/@/components/Modal';
     import {BasicForm, useForm} from '/@/components/Form/index';
-    import {formSchema} from '../QuarkSubscribeRecord.data';
+    import {formSchema, loadToDirFidOptions} from '../QuarkSubscribeRecord.data';
     import {saveOrUpdate} from '../QuarkSubscribeRecord.api';
+
     // Emits声明
     const emit = defineEmits(['register','success']);
     const isUpdate = ref(true);
     const isDetail = ref(false);
+
     //表单配置
     const [registerForm, { setProps,resetFields, setFieldsValue, validate, scrollToField }] = useForm({
         //labelWidth: 150,
@@ -21,10 +23,33 @@
         showActionButtonGroup: false,
         baseColProps: {span: 24}
     });
+
+    // 动态加载 toDirFid 选项并设置到表单中
+    async function loadAndSetToDirFidOptions() {
+      const options = await loadToDirFidOptions();
+      console.log('options:' + options)
+      setProps({
+        schemas: formSchema.map((schema) => {
+          if (schema.field === 'toDirFid') {
+            return {
+              ...schema,
+              componentProps: {
+                ...schema.componentProps,
+                options,
+              },
+            };
+          }
+          return schema;
+        }),
+      });
+    }
+
     //表单赋值
     const [registerModal, {setModalProps, closeModal}] = useModalInner(async (data) => {
         //重置表单
         await resetFields();
+        await loadAndSetToDirFidOptions();  // 调用动态加载选项函数
+
         setModalProps({confirmLoading: false,showCancelBtn:!!data?.showFooter,showOkBtn:!!data?.showFooter});
         isUpdate.value = !!data?.isUpdate;
         isDetail.value = !!data?.showFooter;

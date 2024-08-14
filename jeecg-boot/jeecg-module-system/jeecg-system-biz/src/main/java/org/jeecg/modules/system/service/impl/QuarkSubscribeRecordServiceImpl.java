@@ -1,10 +1,12 @@
 package org.jeecg.modules.system.service.impl;
 
+import java.util.Collections;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.modules.system.model.quark.QuarkNewFileBo;
 import org.jeecg.modules.system.queue.QuarkPanFileManager;
 import org.jeecg.modules.system.entity.QuarkAccount;
 import org.jeecg.modules.system.entity.QuarkSubscribeRecord;
@@ -24,6 +26,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Description: 夸克订阅记录
@@ -41,6 +45,27 @@ public class QuarkSubscribeRecordServiceImpl extends ServiceImpl<QuarkSubscribeR
     @Autowired
     private ExecutorServiceTask executorServiceTask;
 
+    // 定义视频文件扩展名的正则表达式
+    String regex = ".*\\.(mp4|avi|mkv|mov|flv|wmv|m4v)$";
+
+    // 创建Pattern对象
+    Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+
+    @Override
+    public void saveRecord(QuarkSubscribeRecord quarkSubscribeRecord) {
+        // 创建文件夹
+        Integer accountId = quarkSubscribeRecord.getAccountId();
+        QuarkAccount account = quarkAccountService.getById(accountId);
+
+        QuarkPanFileManager manager = new QuarkPanFileManager(account.getCookie());
+        QuarkNewFileBo newFile = manager.newFile(quarkSubscribeRecord.getToDirFid(), quarkSubscribeRecord.getName(), "");
+
+        quarkSubscribeRecord.setToDirFid(newFile.getFid());
+        save(quarkSubscribeRecord);
+
+        sync(Collections.singletonList(quarkSubscribeRecord.getId()));
+    }
+
     @Override
     public void sync(List<Long> ids) {
         for (Long id : ids) {
@@ -55,6 +80,12 @@ public class QuarkSubscribeRecordServiceImpl extends ServiceImpl<QuarkSubscribeR
 
             QuarkPanFileManager manager = new QuarkPanFileManager(account.getCookie());
             String stoken = manager.getStoken(subscribeRecord.getShareUrl());
+            if (Strings.isNullOrEmpty(stoken)) {
+                // 失效
+                subscribeRecord.setStatus(3);
+                updateById(subscribeRecord);
+                return;
+            }
 
             String pwdId = QuarkPanFileManager.getPwdId(subscribeRecord.getShareUrl());
             try {
@@ -67,15 +98,13 @@ public class QuarkSubscribeRecordServiceImpl extends ServiceImpl<QuarkSubscribeR
                     List<String> fidList = new ArrayList<>();
                     List<String> fidTokenList = new ArrayList<>();
                     for (QuarkShareDetailBo.ListItem file : detail.getList()) {
-                        String sourceFid = file.getFid();
-                        boolean match = syncRecordList.stream().anyMatch(t -> t.getSourceFid().equals(sourceFid));
-                        if (match) {
-                            log.info("该文件已存在,sourceFid:{}", sourceFid);
+                        Matcher matcher = pattern.matcher(file.getFileName());
+                        if (!matcher.matches()) {
+                            log.info("fileName:{},非视频文件", file.getFileName());
                             continue;
                         }
 
-                        fidList.add(sourceFid);
-                        fidTokenList.add(file.getShareFidToken());
+                        String sourceFid = file.getFid();
 
                         QuarkSyncRecord syncRecord = new QuarkSyncRecord();
                         syncRecord.setSubscribeId(subscribeRecord.getId());
@@ -89,6 +118,15 @@ public class QuarkSubscribeRecordServiceImpl extends ServiceImpl<QuarkSubscribeR
                         } else {
                             syncRecord.setName(file.getFileName());
                         }
+                        boolean match = syncRecordList.stream().anyMatch(t -> t.getSourceFid().equals(sourceFid) || t.getName().equals(syncRecord.getName()));
+                        if (match) {
+                            log.info("该文件已存在,sourceFid:{}", sourceFid);
+                            continue;
+                        }
+
+                        fidList.add(sourceFid);
+                        fidTokenList.add(file.getShareFidToken());
+
                         syncRecord.setDirFid(subscribeRecord.getToDirFid());
                         syncRecord.setIsDir(file.isDir() ? 1 : 0);
                         syncRecord.setStatus(1);
@@ -113,6 +151,7 @@ public class QuarkSubscribeRecordServiceImpl extends ServiceImpl<QuarkSubscribeR
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            log.info("=============sync end=============,subscribeId:{}", id);
         }
     }
 }

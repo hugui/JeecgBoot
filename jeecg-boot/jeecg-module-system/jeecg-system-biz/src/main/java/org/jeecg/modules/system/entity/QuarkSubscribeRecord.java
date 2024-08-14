@@ -70,8 +70,8 @@ public class QuarkSubscribeRecord implements Serializable {
     /**
      * 状态
      */
-    @Excel(name = "状态", width = 15)
-    @ApiModelProperty(value = "状态")
+    @Excel(name = "状态", width = 15, dicCode = "subscribe_status")
+    @Dict(dicCode = "subscribe_status")
     private Integer status;
     /**
      * 创建人

@@ -76,9 +76,7 @@ public class QuarkSubscribeRecordController extends JeecgController<QuarkSubscri
     @RequiresPermissions("quark:quark_subscribe_record:add")
     @PostMapping(value = "/add")
     public Result<String> add(@RequestBody QuarkSubscribeRecord quarkSubscribeRecord) {
-        quarkSubscribeRecordService.save(quarkSubscribeRecord);
-        log.info("quarkSubscribeRecord:{}", JSON.toJSONString(quarkSubscribeRecord));
-        quarkSubscribeRecordService.sync(Collections.singletonList(quarkSubscribeRecord.getId()));
+        quarkSubscribeRecordService.saveRecord(quarkSubscribeRecord);
         return Result.OK("添加成功！");
     }
 
@@ -171,6 +169,15 @@ public class QuarkSubscribeRecordController extends JeecgController<QuarkSubscri
 
     @PostMapping(value = "/sync")
     public Result<?> sync(@RequestBody QuarkSyncReq req) {
+        if (req == null || CollectionUtils.isEmpty(req.getIds())) {
+            return Result.error("参数错误");
+        }
+        quarkSubscribeRecordService.sync(req.getIds());
+        return Result.OK();
+    }
+
+    @GetMapping(value = "/folders")
+    public Result<?> folders(@RequestBody QuarkSyncReq req) {
         if (req == null || CollectionUtils.isEmpty(req.getIds())) {
             return Result.error("参数错误");
         }

@@ -28,7 +28,7 @@ public class ExecutorServiceTask {
 
     public void scheduleTask(long delayInSeconds, QuarkPanFileManager manager, List<QuarkSyncRecord> quarkSyncRecords) {
         scheduler.schedule(() -> {
-            System.out.println("=============Task executed after delay=============");
+            log.info("=============Task executed after delay=============,subscribeId:{}", quarkSyncRecords.get(0).getSubscribeId());
             String fid = quarkSyncRecords.get(0).getDirFid();
             List<QuarkFileListBo.QuarkFileListItemBo> fileListBos;
             try {
