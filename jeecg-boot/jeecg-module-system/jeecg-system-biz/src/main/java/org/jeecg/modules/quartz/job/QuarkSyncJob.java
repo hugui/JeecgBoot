@@ -19,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 夸克订阅同步定时任务
@@ -44,21 +45,20 @@ public class QuarkSyncJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         log.info(" Job Execution key：" + jobExecutionContext.getJobDetail().getKey());
         QuarkAccount account = quarkAccountService.getById(1L);
-        QuarkPanFileManager manager = new QuarkPanFileManager(account.getCookie());
+//        QuarkPanFileManager manager = new QuarkPanFileManager(account.getCookie());
 
-        List<Integer> readStatues = Arrays.asList(0, 1);
-        List<QuarkUpdateListBo.QuarkUpdateListItemBo> list = manager.updateList(readStatues);
-        log.info("updateList:{}", JSONObject.toJSONString(list));
-        if (CollectionUtils.isEmpty(list)) {
-            return;
-        }
-        for (QuarkUpdateListBo.QuarkUpdateListItemBo itemBo : list) {
-            LambdaQueryWrapper<QuarkSubscribeRecord> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(QuarkSubscribeRecord::getShareUrl, itemBo.getShareUrl());
-            QuarkSubscribeRecord subscribeRecord = quarkSubscribeRecordService.getOne(queryWrapper);
-            if (subscribeRecord != null) {
-                quarkSubscribeRecordService.sync(Collections.singletonList(subscribeRecord.getId()));
-            }
+//        List<Integer> readStatues = Arrays.asList(0, 1);
+//        List<QuarkUpdateListBo.QuarkUpdateListItemBo> list = manager.updateList(readStatues);
+//        log.info("updateList:{}", JSONObject.toJSONString(list));
+//        if (CollectionUtils.isEmpty(list)) {
+//            return;
+//        }
+        LambdaQueryWrapper<QuarkSubscribeRecord> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(QuarkSubscribeRecord::getStatus, 1);
+        List<QuarkSubscribeRecord> subscribeRecordList = quarkSubscribeRecordService.list(queryWrapper);
+        if (!CollectionUtils.isEmpty(subscribeRecordList)) {
+            List<Long> subscribeIds = subscribeRecordList.stream().map(QuarkSubscribeRecord::getId).collect(Collectors.toList());
+            quarkSubscribeRecordService.sync(subscribeIds);
         }
 
     }
