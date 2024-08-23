@@ -57,6 +57,7 @@ public class QuarkSyncJob implements Job {
         queryWrapper.eq(QuarkSubscribeRecord::getStatus, 1);
         List<QuarkSubscribeRecord> subscribeRecordList = quarkSubscribeRecordService.list(queryWrapper);
         if (!CollectionUtils.isEmpty(subscribeRecordList)) {
+            log.info("订阅记录subscribeRecordList:{}", JSONObject.toJSONString(subscribeRecordList));
             List<Long> subscribeIds = subscribeRecordList.stream().map(QuarkSubscribeRecord::getId).collect(Collectors.toList());
             quarkSubscribeRecordService.sync(subscribeIds);
         }

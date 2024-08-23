@@ -84,7 +84,7 @@ public class QuarkSubscribeRecordServiceImpl extends ServiceImpl<QuarkSubscribeR
                 // 失效
                 subscribeRecord.setStatus(3);
                 updateById(subscribeRecord);
-                return;
+                continue;
             }
 
             String pwdId = QuarkPanFileManager.getPwdId(subscribeRecord.getShareUrl());
