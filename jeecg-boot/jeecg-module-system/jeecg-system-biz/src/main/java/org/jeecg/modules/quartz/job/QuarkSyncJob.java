@@ -13,6 +13,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -28,8 +29,6 @@ import java.util.stream.Collectors;
 @Component
 public class QuarkSyncJob implements Job {
     @Autowired
-    private IQuarkAccountService quarkAccountService;
-    @Autowired
     private IQuarkSubscribeRecordService quarkSubscribeRecordService;
 
     /**
@@ -41,18 +40,12 @@ public class QuarkSyncJob implements Job {
         this.parameter = parameter;
     }
 
-    @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        log.info(" Job Execution key：" + jobExecutionContext.getJobDetail().getKey());
-        QuarkAccount account = quarkAccountService.getById(1L);
-//        QuarkPanFileManager manager = new QuarkPanFileManager(account.getCookie());
-
-//        List<Integer> readStatues = Arrays.asList(0, 1);
-//        List<QuarkUpdateListBo.QuarkUpdateListItemBo> list = manager.updateList(readStatues);
-//        log.info("updateList:{}", JSONObject.toJSONString(list));
-//        if (CollectionUtils.isEmpty(list)) {
-//            return;
-//        }
+    /**
+     * 每小时执行一次
+     */
+    @Scheduled(cron = "0 0 * * * ?")
+    public void subscribeSyncTask() {
+        log.info("subscribeSyncTask start");
         LambdaQueryWrapper<QuarkSubscribeRecord> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(QuarkSubscribeRecord::getStatus, 1);
         List<QuarkSubscribeRecord> subscribeRecordList = quarkSubscribeRecordService.list(queryWrapper);
@@ -61,6 +54,11 @@ public class QuarkSyncJob implements Job {
             List<Long> subscribeIds = subscribeRecordList.stream().map(QuarkSubscribeRecord::getId).collect(Collectors.toList());
             quarkSubscribeRecordService.sync(subscribeIds);
         }
+    }
 
+    @Override
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        log.info(" Job Execution key：" + jobExecutionContext.getJobDetail().getKey());
+        subscribeSyncTask();
     }
 }
