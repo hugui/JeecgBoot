@@ -73,6 +73,7 @@ export const formSchema: FormSchema[] = [
     dynamicRules: ({ model, schema }) => {
       return [{ required: true, message: '请输入夸克账号ID!' }];
     },
+    defaultValue: 1,
   },
   {
     label: '分享链接',
@@ -85,14 +86,18 @@ export const formSchema: FormSchema[] = [
   {
     label: '保存的文件夹',
     field: 'toDirFid',
-    // component: 'Input',
-    component: 'Select',
-    dynamicDisabled: ({ values }) => {
-      // console.log('toDirFid:' + JSON.stringify(values));
-      return values.id > 0;
-    },
+    component: 'ApiTreeSelect',
     componentProps: {
-      options: [],
+      api: getFolders, // 使用动态加载的函数
+      placeholder: '请选择保存的文件夹',
+      fieldNames: {
+        label: 'fileName', // 显示字段
+        value: 'fid', // 实际值字段
+        children: 'sub', // 子节点
+      },
+      treeDefaultExpandAll: false, // 默认展开所有节点
+      showSearch: true, // 启用搜索功能
+      allowClear: true, // 允许清空选项
     },
     dynamicRules: ({ model, schema }) => {
       return [{ required: true, message: '请选择保存的文件夹!' }];
@@ -122,6 +127,7 @@ export const formSchema: FormSchema[] = [
     dynamicRules: ({ model, schema }) => {
       return [{ required: true, message: '请选择状态!' }];
     },
+    defaultValue: 1, // 设置默认值为“订阅中”
   },
   // TODO 主键隐藏字段，目前写死为ID
   {
