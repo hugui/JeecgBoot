@@ -21,9 +21,13 @@ public class QuarkFileListBo {
 
     @Data
     public static class QuarkFileListItemBo {
-        @JSONField(name = "file_name")
+//        @JSONField(name = "file_name")
         private String fileName;
 
         private String fid;
+
+        private Boolean dir;
+
+        private List<QuarkFileListItemBo> sub;
     }
 }

@@ -191,7 +191,7 @@ public class QuarkPanFileManager {
                 .form("uc_param_str", "")
                 .form("pdir_fid", pdirFid)
                 .form("_page", 1)
-                .form("_size", 100)
+                .form("_size", 50)
                 .form("_fetch_total", 1)
                 .form("_fetch_sub_dirs", 1)
                 .form("_sort", "file_type:asc,updated_at:desc");
