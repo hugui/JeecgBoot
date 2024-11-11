@@ -88,7 +88,7 @@ export const formSchema: FormSchema[] = [
     field: 'toDirFid',
     component: 'ApiTreeSelect',
     componentProps: {
-      api: getFolders, // 使用动态加载的函数
+      api: () => getFolders('0'), // 使用动态加载的函数
       placeholder: '请选择保存的文件夹',
       fieldNames: {
         label: 'fileName', // 显示字段

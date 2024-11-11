@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8087
   tomcat:
     max-swallow-size: -1
   error:
@@ -161,7 +161,7 @@ spring:
           slow-sql-millis: 5000
       datasource:
         master:
-          url: jdbc:mysql://120.77.243.135:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://110.40.48.222:52437/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
           password: Hg123456
           driver-class-name: com.mysql.cj.jdbc.Driver
@@ -174,8 +174,8 @@ spring:
   #redis 配置
   redis:
     database: 0
-    host: 120.77.243.135
-    port: 6379
+    host: 110.40.48.222
+    port: 17290
     password: 'Hg123456'
 #mybatis plus 设置
 mybatis-plus:
