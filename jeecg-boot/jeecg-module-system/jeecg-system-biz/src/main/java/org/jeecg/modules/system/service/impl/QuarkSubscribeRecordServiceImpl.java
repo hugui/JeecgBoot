@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.quark.QuarkNewFileBo;
 import org.jeecg.modules.system.queue.QuarkPanFileManager;
 import org.jeecg.modules.system.entity.QuarkAccount;
@@ -52,18 +53,38 @@ public class QuarkSubscribeRecordServiceImpl extends ServiceImpl<QuarkSubscribeR
     Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 
     @Override
-    public void saveRecord(QuarkSubscribeRecord quarkSubscribeRecord) {
-        // 创建文件夹
-        Integer accountId = quarkSubscribeRecord.getAccountId();
+    public void saveRecord(QuarkSubscribeRecord entity) {
+        Integer accountId = entity.getAccountId();
         QuarkAccount account = quarkAccountService.getById(accountId);
 
+        LambdaQueryWrapper<QuarkSubscribeRecord> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(QuarkSubscribeRecord::getAccountId, accountId);
+        queryWrapper.eq(QuarkSubscribeRecord::getShareUrl, entity.getShareUrl());
+        QuarkSubscribeRecord subscribeRecord = getOne(queryWrapper);
+        if (subscribeRecord != null) {
+            log.info("已存在,shareUrl:{},accountId:{}", entity.getShareUrl(), accountId);
+            return;
+        }
+
         QuarkPanFileManager manager = new QuarkPanFileManager(account.getCookie());
-        QuarkNewFileBo newFile = manager.newFile(quarkSubscribeRecord.getToDirFid(), quarkSubscribeRecord.getName(), "");
+        if (Strings.isNullOrEmpty(entity.getName())) {
+            String stoken = manager.getStoken(entity.getShareUrl());
 
-        quarkSubscribeRecord.setToDirFid(newFile.getFid());
-        save(quarkSubscribeRecord);
+            String pwdId = QuarkPanFileManager.getPwdId(entity.getShareUrl());
 
-        sync(Collections.singletonList(quarkSubscribeRecord.getId()));
+            QuarkShareDetailBo detailBo = manager.getDetail(stoken, pwdId, "0");
+            if (detailBo != null) {
+                entity.setName(detailBo.getShare().getTitle());
+            }
+        }
+
+        // 创建文件夹
+        QuarkNewFileBo newFile = manager.newFile(entity.getToDirFid(), entity.getName(), "");
+
+        entity.setToDirFid(newFile.getFid());
+        save(entity);
+
+        sync(Collections.singletonList(entity.getId()));
     }
 
     @Override

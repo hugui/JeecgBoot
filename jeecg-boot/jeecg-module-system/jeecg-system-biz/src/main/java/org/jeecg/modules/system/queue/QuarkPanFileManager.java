@@ -5,6 +5,7 @@ import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -19,7 +20,7 @@ import org.jeecg.modules.system.model.quark.*;
 
 @Slf4j
 public class QuarkPanFileManager {
-    private static final String COOKIE = "_UP_A4A_11_=wb9611d1e967474abe870bde627b44b7; CwsSessionId=a0ce3a06-ee3a-4b10-a3d2-fd57e317f23d; b-user-id=0b8c1c29-3648-02f6-2ca0-3212f6e60e53; xlly_s=1; _UP_D_=pc; __pus=cc3020435393659bbd657540a6d7c5b0AASlGprTBvRZVJlw527SHhXBruPnnQ4CPBJetDHLpcZpgtrKeHFYi7SYDx7OOjUpJ5Ji9ZIljN6qFHssqJVIYGci; __kp=67b66d50-4ee9-11ef-bd3b-7ba7ae21d987; __kps=AATf3G+olR2p8l7kRf+aOsXf; __ktd=SB1Ot9wItRg0GVrzGU67gg==; __uid=AATf3G+olR2p8l7kRf+aOsXf; __puus=ed8a09c1cd43881b2073f66994313ff9AASM1DycRLdTmC9FNVcahXJ2aEI1azWV8BXNViTzA3o41F+f5+VkQFzuT3qiaMOVUI2V0mLDd3nxhm3PnTQx15/KKMzbIGs0a8l1kjj7NTnE3g1NVIJS9BoEl+NvVKwDHAJtIDpHkzxq8CSR+UoLKkOvX7EjTewZlPkVMs0n4zfkx+tjYAprB/JMyiwRHUIBeNRPtCOz9ctL7M7vyKIwD+4m; tfstk=faHmYNtVTz_QxgI9oY2X68S4qIdJv-wUQFuTWPna7o47uPdjXb2ZvVqTHc8js4maPizw1IZgalgHcjEwlz0oPqXAB-zAjRmi-rkO3s5yUkrh71-__arzYkrqSctbbPuZSPhvwpnjcRwwJcvppmTZxWMrnR7t4v-ZQ3Tpppn2gowt4eKszgg87lya0Sr443qQjOya_ooyqlrOu1Wq70-ufzrVusPVa0rU0o7wvx88krzsUEP3ZZYrZBT0VS4EmB6NIYXLiyo4rO8EEoYg8mzlQOzXMqsIbV8GBJlIrAVUNdX7HDczUockb_z4tjlU3AYhu0gmlxGEWh5350h3_XFPoUUt90H4Z28REVNigXyqIevP4T5PTHcdCu-tU11_guZuRrAyAo0SZy5Wq3fUmSr70TKkq190guZuJ3xlTHN4VoWR.";
+    private static final String COOKIE = "_UP_A4A_11_=wb9611d1e967474abe870bde627b44b7; CwsSessionId=a0ce3a06-ee3a-4b10-a3d2-fd57e317f23d; b-user-id=0b8c1c29-3648-02f6-2ca0-3212f6e60e53; _UP_D_=pc; xlly_s=1; __pus=19c01243c58cabb09e4a9ea312643681AATRLiBofCCLdX9AIamMO/+Un5SjBWqq0CiVp18+bi3Vv3/yvvldf+8AiHxyU3AkuPwj7neEWniox1zWDfXYoryo; __kp=b3efd220-a550-11ef-a73a-23b1767f453c; __kps=AATYrhUzZ9xlhBmvMrP47r9W; __ktd=yx/Qr9x1hvJGBUcFC9y69g==; __uid=AATYrhUzZ9xlhBmvMrP47r9W; __puus=64b7f0362bbce1b547ec67338a40fc84AAQyG8POdLyMbDQrbQx9NmDNb3tHHjH6b6p8vafF+C/ZMhrb+IMMrwhUmj3pPGVtThMff+nsUS7JdfkuaqFRcLq1Kc0Rxla62MGl4ZO2Jz5z/PS0OaQNLCl7DXkcBLybd4MWg1K/n60mzNsVDfb3DKOvKCfwKpWJWw//fkmUAklCMtuV0o5Kmitoe17AbIA771HuzwftU9LxNGhfn3GTd23O; isg=BAYG45vcnSpISEjKalMqAZh9V_qIZ0ohg9s1ZfAv8ikE86YNWPeaMeyFyy8_70I5; tfstk=fLltLpYaleQ9CMQdpt93mvON2fLnkj3Zvcu5ioqGhDnKume0hR4gM-i_xf201lmdMP405rZ_Gk6Qy0_s15iDMogzY1mDQ-fA7XnRi1xwQq1YiStkqQAo7dP4G3f9bxFQbruQcwp5pouagSth-s9kwVo77jCwWSTLOr4PcSZjcWsQYrzffr16JeU4AsabfSgQArU1hribGe3QYrTz46r2hufxnq8ARuRzYs1j1IyT2VBcGsGLWR3S5k3n-XUTBuwHtEmxw4gsarh2PtExzAig8mdJvWGtXfwLMICUs4HIXJH9D6eEd4lbpv-RU4usXYwS1BLUpfuu1kh2usrsIqG0Hft5olGZjXergGK3mY0n1JnWx6n4HAM71jKJOg-nZbE68gq8oOTpJtW4Cy-mEa2oCUFAZyEk-c6V3JBzJuYpQtW4CyzLqeXG3tydU";
 
     private String cookie;
 
@@ -80,24 +81,29 @@ public class QuarkPanFileManager {
         return null;
     }
 
-    public QuarkShareDetailBo getDetail(String stoken, String pwdId, String fid) throws Exception {
+    public QuarkShareDetailBo getDetail(String stoken, String pwdId, String fid) {
         String api = "https://drive-h.quark.cn/1/clouddrive/share/sharepage/detail";
-        HttpRequest request = HttpUtil.createGet(api).addHeaders(getHeaders())
-                .form("pr", "ucpro")
-                .form("fr", "pc")
-                .form("uc_param_str", "")
-                .form("__dt", generateRandomInteger())
-                .form("__t", System.currentTimeMillis())
-                .form("stoken", URLEncoder.encode(stoken, "UTF-8"))
-                .form("pwd_id", pwdId)
-                .form("pdir_fid", fid)
-                .form("force", 0)
-                .form("_page", 1)
-                .form("_size", 50)
-                .form("_fetch_banner", 1)
-                .form("_fetch_share", 1)
-                .form("_fetch_total", 1)
-                .form("_sort", "file_type:asc,updated_at:desc");
+        HttpRequest request = null;
+        try {
+            request = HttpUtil.createGet(api).addHeaders(getHeaders())
+                    .form("pr", "ucpro")
+                    .form("fr", "pc")
+                    .form("uc_param_str", "")
+                    .form("__dt", generateRandomInteger())
+                    .form("__t", System.currentTimeMillis())
+                    .form("stoken", URLEncoder.encode(stoken, "UTF-8"))
+                    .form("pwd_id", pwdId)
+                    .form("pdir_fid", fid)
+                    .form("force", 0)
+                    .form("_page", 1)
+                    .form("_size", 50)
+                    .form("_fetch_banner", 1)
+                    .form("_fetch_share", 1)
+                    .form("_fetch_total", 1)
+                    .form("_sort", "file_type:asc,updated_at:desc");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
         HttpResponse response = request.execute();
 //        System.out.println("response: " + JSON.toJSONString(response));
         int statusCode = response.getStatus();
@@ -158,10 +164,32 @@ public class QuarkPanFileManager {
         return result.getData().getList();
     }
 
-    public JSONObject save(SaveFileBo saveFileBo) throws Exception {
+    public JSONObject save(SaveFileBo saveFileBo) {
         String api = "https://drive-pc.quark.cn/1/clouddrive/share/sharepage/save?pr=ucpro&fr=pc&uc_param_str=&__dt=" + generateRandomInteger() + "&__t=" + System.currentTimeMillis();
         HttpRequest request = HttpRequest.post(api)
                 .body(JSONObject.toJSONString(saveFileBo))
+                .addHeaders(getHeaders());
+        HttpResponse response = request.execute();
+
+        String body = response.body();
+        return JSON.parseObject(body);
+    }
+
+    /**
+     * 删除
+     *
+     * @param filelist
+     * @return
+     */
+    public JSONObject delete(List<String> filelist) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("action_type", 2);
+        jsonObject.put("filelist", filelist);
+        jsonObject.put("exclude_fids", Collections.emptyList());
+
+        String api = "https://drive-pc.quark.cn/1/clouddrive/file/delete?pr=ucpro&fr=pc&uc_param_str=";
+        HttpRequest request = HttpRequest.post(api)
+                .body(JSONObject.toJSONString(jsonObject))
                 .addHeaders(getHeaders());
         HttpResponse response = request.execute();
 
@@ -262,14 +290,28 @@ public class QuarkPanFileManager {
     }
 
     public static void main(String[] args) throws Exception {
-        String shareUrl = "https://pan.quark.cn/s/c5fa327fe68c";
-        String stoken = "cCOyma6zdOllGPp76zH6Peqn6ifT4CuldGTQIwFjF2w=";
+        String shareUrl = "https://pan.quark.cn/s/93e6f2a89c3a";
+        String pwdId = getPwdId(shareUrl);
 
         QuarkPanFileManager manager = new QuarkPanFileManager(COOKIE);
+        String stoken = manager.getStoken(shareUrl);
+        QuarkShareDetailBo detailBo = manager.getDetail(stoken, pwdId, "0");
 
-        List<Integer> readStatues = Arrays.asList(0, 1);
-        List<QuarkUpdateListBo.QuarkUpdateListItemBo> list = manager.updateList(readStatues);
+        SaveFileBo saveFileBo = new SaveFileBo();
+        saveFileBo.setScene("link");
+        saveFileBo.setPdirFid("0");
+        saveFileBo.setPwdId(pwdId);
+        saveFileBo.setStoken(stoken);
+        saveFileBo.setToPdirFid("f527cf3794af453b93e67d98a7a52c39");
+        List<QuarkShareDetailBo.ListItem> itemList = detailBo.getList();
 
-        System.out.println(JSONObject.toJSONString(list));
+        QuarkShareDetailBo.ListItem listItem = itemList.get(0);
+        saveFileBo.setFidList(Collections.singletonList(listItem.getFid()));
+        saveFileBo.setFidTokenList(Collections.singletonList(listItem.getShareFidToken()));
+
+        JSONObject jsonObject = manager.save(saveFileBo);
+
+        System.out.println(JSONObject.toJSONString(detailBo));
+        System.out.println(JSONObject.toJSONString(jsonObject));
     }
 }

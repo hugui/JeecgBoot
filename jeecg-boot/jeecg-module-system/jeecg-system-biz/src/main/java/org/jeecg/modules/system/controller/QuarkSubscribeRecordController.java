@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.config.shiro.IgnoreAuth;
 import org.jeecg.modules.system.entity.QuarkSubscribeRecord;
 import org.jeecg.modules.system.model.quark.QuarkSyncReq;
 import org.jeecg.modules.system.service.IQuarkSubscribeRecordService;
@@ -69,8 +70,9 @@ public class QuarkSubscribeRecordController extends JeecgController<QuarkSubscri
      */
     @AutoLog(value = "夸克订阅记录-添加")
     @ApiOperation(value = "夸克订阅记录-添加", notes = "夸克订阅记录-添加")
-    @RequiresPermissions("quark:quark_subscribe_record:add")
+//    @RequiresPermissions("quark:quark_subscribe_record:add")
     @PostMapping(value = "/add")
+    @IgnoreAuth
     public Result<String> add(@RequestBody QuarkSubscribeRecord quarkSubscribeRecord) {
         quarkSubscribeRecordService.saveRecord(quarkSubscribeRecord);
         return Result.OK("添加成功！");
